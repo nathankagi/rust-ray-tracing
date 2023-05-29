@@ -105,3 +105,40 @@ impl ops::Div<f64> for Vec3 {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+
+    #[test]
+    fn test_create_vec3() {
+        let v = Vec3::new(1.0, 2.0, 3.0);
+        assert_eq!(v.e[0], 1.0);
+        assert_eq!(v.e[1], 2.0);
+        assert_eq!(v.e[2], 3.0);
+    }
+
+    #[test]
+    fn test_vec3_operators() {
+        let v = Vec3::new(1.0, 2.0, 3.0) + Vec3::new(2.0, 2.0, 2.0);
+        assert_eq!(v.e[0], 3.0);
+        assert_eq!(v.e[1], 4.0);
+        assert_eq!(v.e[2], 5.0);
+
+        let v = Vec3::new(1.0, 2.0, 3.0) - Vec3::new(2.0, 2.0, 2.0);
+        assert_eq!(v.e[0], -1.0);
+        assert_eq!(v.e[1], 0.0);
+        assert_eq!(v.e[2], 1.0);
+
+        let v = Vec3::new(1.0, 2.0, 3.0) * Vec3::new(2.0, 2.0, 2.0);
+        assert_eq!(v.e[0], 2.0);
+        assert_eq!(v.e[1], 4.0);
+        assert_eq!(v.e[2], 6.0);
+
+        let v = Vec3::new(1.0, 2.0, 3.0) / Vec3::new(2.0, 2.0, 2.0);
+        assert_eq!(v.e[0], 0.5);
+        assert_eq!(v.e[1], 1.0);
+        assert_eq!(v.e[2], 1.5);
+    }
+}
