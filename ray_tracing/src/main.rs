@@ -20,7 +20,7 @@ fn main() -> io::Result<()> {
             let ig: i32 = (255.99 * g) as i32;
             let ib: i32 = (255.99 * b) as i32;
 
-            // io::stdout().write_all(format!("{ir} {ig} {ib}\n").as_bytes())?;
+            io::stdout().write_all(format!("{ir} {ig} {ib}\n").as_bytes())?;
         }
     }
     io::stderr().write_all(b"Done\n")?;
