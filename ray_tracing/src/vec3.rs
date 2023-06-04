@@ -1,108 +1,107 @@
-use std::io;
 use std::ops;
 
+#[derive(Copy, Clone)]
 pub struct Vec3 {
-    pub e: [f64; 3],
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
 }
 
 impl Vec3 {
-    pub fn new(e0: f64, e1: f64, e2: f64) -> Vec3 {
-        Vec3 { e: [e0, e1, e2] }
+    pub fn new(x: f64, y: f64, z: f64) -> Vec3 {
+        Vec3 { x, y, z }
+    }
+
+    pub fn x(self) -> f64 {
+        self.x
+    }
+
+    pub fn y(self) -> f64 {
+        self.y
+    }
+
+    pub fn z(self) -> f64 {
+        self.z
     }
 
     pub fn dot(u: Vec3, v: Vec3) -> f64 {
-        u.e[0] * v.e[0] + u.e[1] * v.e[1] + u.e[2] * v.e[2]
+        u.x() * v.x() + u.y() * v.y() + u.z() * v.z()
     }
 
     pub fn cross(u: Vec3, v: Vec3) -> Vec3 {
-        Vec3 {
-            e: [
-                u.e[1] * v.e[0] - u.e[2] * v.e[1],
-                u.e[2] * v.e[0] - u.e[0] * v.e[2],
-                u.e[0] * v.e[1] - u.e[1] * v.e[0],
-            ],
-        }
+        Vec3::new(
+            u.y() * v.x() - u.z() * v.y(),
+            u.z() * v.x() - u.x() * v.z(),
+            u.x() * v.y() - u.y() * v.x(),
+        )
     }
 
-    pub fn unit_vector(&self) -> Vec3 {
-        let len = self.length();
-        Vec3 {
-            e: [self.e[0] / len, self.e[1] / len, self.e[2] / len],
-        }
+    pub fn unit_vector(self) -> Vec3 {
+        self / self.length()
     }
 
-    pub fn length(&self) -> f64 {
+    pub fn length(self) -> f64 {
         self.length_squared().sqrt()
     }
 
     pub fn length_squared(&self) -> f64 {
-        self.e[0] * self.e[0] + self.e[1] * self.e[1] + self.e[2] * self.e[2]
+        self.x() * self.x() + self.y() * self.y() + self.z() * self.z()
     }
 }
 
-impl ops::Add for Vec3 {
-    type Output = Self;
+impl ops::Add<Vec3> for Vec3 {
+    type Output = Vec3;
 
-    fn add(self, other: Self) -> Self {
-        Vec3 {
-            e: [
-                self.e[0] + other.e[0],
-                self.e[1] + other.e[1],
-                self.e[2] + other.e[2],
-            ],
-        }
+    fn add(self, other: Vec3) -> Vec3 {
+        Vec3::new(
+            self.x() + other.x(),
+            self.y() + other.y(),
+            self.z() + other.z(),
+        )
     }
 }
 
-impl ops::Sub for Vec3 {
-    type Output = Self;
+impl ops::Sub<Vec3> for Vec3 {
+    type Output = Vec3;
 
-    fn sub(self, other: Self) -> Self {
-        Vec3 {
-            e: [
-                self.e[0] - other.e[0],
-                self.e[1] - other.e[1],
-                self.e[2] - other.e[2],
-            ],
-        }
+    fn sub(self, other: Vec3) -> Vec3 {
+        Vec3::new(
+            self.x() - other.x(),
+            self.y() - other.y(),
+            self.z() - other.z(),
+        )
     }
 }
 
-impl ops::Mul for Vec3 {
-    type Output = Self;
+impl ops::Mul<Vec3> for Vec3 {
+    type Output = Vec3;
 
-    fn mul(self, other: Self) -> Self {
-        Vec3 {
-            e: [
-                self.e[0] * other.e[0],
-                self.e[1] * other.e[1],
-                self.e[2] * other.e[2],
-            ],
-        }
+    fn mul(self, other: Vec3) -> Vec3 {
+        Vec3::new(
+            self.x() * other.x(),
+            self.y() * other.y(),
+            self.z() * other.z(),
+        )
     }
 }
 
 impl ops::Div<Vec3> for Vec3 {
-    type Output = Self;
+    type Output = Vec3;
 
-    fn div(self, other: Self) -> Self {
-        Vec3 {
-            e: [
-                self.e[0] / other.e[0],
-                self.e[1] / other.e[1],
-                self.e[2] / other.e[2],
-            ],
-        }
+    fn div(self, other: Vec3) -> Vec3 {
+        Vec3::new(
+            self.x() / other.x(),
+            self.y() / other.y(),
+            self.z() / other.z(),
+        )
     }
 }
 
 impl ops::Div<f64> for Vec3 {
-    type Output = Self;
+    type Output = Vec3;
 
-    fn div(self, v: f64) -> Self {
-        Vec3 {
-            e: [self.e[0] / v, self.e[1] / v, self.e[2] / v],
-        }
+    fn div(self, v: f64) -> Vec3 {
+        Vec3::new(self.x() / v, self.y() / v, self.z() / v)
     }
 }
 
@@ -114,31 +113,36 @@ mod tests {
     #[test]
     fn test_create_vec3() {
         let v = Vec3::new(1.0, 2.0, 3.0);
-        assert_eq!(v.e[0], 1.0);
-        assert_eq!(v.e[1], 2.0);
-        assert_eq!(v.e[2], 3.0);
+        assert_eq!(v.x(), 1.0);
+        assert_eq!(v.y(), 2.0);
+        assert_eq!(v.z(), 3.0);
     }
 
     #[test]
     fn test_vec3_operators() {
         let v = Vec3::new(1.0, 2.0, 3.0) + Vec3::new(2.0, 2.0, 2.0);
-        assert_eq!(v.e[0], 3.0);
-        assert_eq!(v.e[1], 4.0);
-        assert_eq!(v.e[2], 5.0);
+        assert_eq!(v.x(), 3.0);
+        assert_eq!(v.y(), 4.0);
+        assert_eq!(v.z(), 5.0);
 
         let v = Vec3::new(1.0, 2.0, 3.0) - Vec3::new(2.0, 2.0, 2.0);
-        assert_eq!(v.e[0], -1.0);
-        assert_eq!(v.e[1], 0.0);
-        assert_eq!(v.e[2], 1.0);
+        assert_eq!(v.x(), -1.0);
+        assert_eq!(v.y(), 0.0);
+        assert_eq!(v.z(), 1.0);
 
         let v = Vec3::new(1.0, 2.0, 3.0) * Vec3::new(2.0, 2.0, 2.0);
-        assert_eq!(v.e[0], 2.0);
-        assert_eq!(v.e[1], 4.0);
-        assert_eq!(v.e[2], 6.0);
+        assert_eq!(v.x(), 2.0);
+        assert_eq!(v.y(), 4.0);
+        assert_eq!(v.z(), 6.0);
 
         let v = Vec3::new(1.0, 2.0, 3.0) / Vec3::new(2.0, 2.0, 2.0);
-        assert_eq!(v.e[0], 0.5);
-        assert_eq!(v.e[1], 1.0);
-        assert_eq!(v.e[2], 1.5);
+        assert_eq!(v.x(), 0.5);
+        assert_eq!(v.y(), 1.0);
+        assert_eq!(v.z(), 1.5);
+
+        let v = Vec3::new(2.0, 3.0, 6.0) / 4.0;
+        assert_eq!(v.x(), 0.5);
+        assert_eq!(v.y(), 3.0 / 4.0);
+        assert_eq!(v.z(), 6.0 / 4.0);
     }
 }
