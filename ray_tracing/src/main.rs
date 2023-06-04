@@ -1,6 +1,8 @@
+mod vec3;
+
 use std::io::{self, Write};
 
-mod vec3;
+use vec3::Vec3;
 
 fn main() -> io::Result<()> {
     // Image
@@ -12,15 +14,14 @@ fn main() -> io::Result<()> {
     for j in (0i32..image_height).rev() {
         io::stderr().write_all(format!("Scanlines remaining: {j}\n").as_bytes())?;
         for i in 0i32..image_width {
-            let r: f32 = i as f32 / (image_width as f32 - 1.0);
-            let g: f32 = j as f32 / (image_height as f32 - 1.0);
-            let b: f32 = 0.25;
+            let colour = Vec3::new(
+                255.999 * i as f64 / (image_width as f64 - 1.0),
+                255.999 * j as f64 / (image_height as f64 - 1.0),
+                0.25,
+            );
 
-            let ir: i32 = (255.99 * r) as i32;
-            let ig: i32 = (255.99 * g) as i32;
-            let ib: i32 = (255.99 * b) as i32;
-
-            io::stdout().write_all(format!("{ir} {ig} {ib}\n").as_bytes())?;
+            io::stdout()
+                .write_all(format!("{} {} {}\n", colour.x(), colour.y(), colour.z()).as_bytes())?;
         }
     }
     io::stderr().write_all(b"Done\n")?;
