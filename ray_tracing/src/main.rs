@@ -1,8 +1,16 @@
+mod ray;
 mod vec3;
 
 use std::io::{self, Write};
 
-use vec3::Vec3;
+use crate::ray::Ray;
+use crate::vec3::Vec3;
+
+fn ray_colour(&r: Ray) -> f64 {
+    unit_direction: Vec3 = r.direction().unit_vector();
+    let t: f64 = 0.5 * (unit_direction.y() + 1);
+    (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0);
+}
 
 fn main() -> io::Result<()> {
     // Image

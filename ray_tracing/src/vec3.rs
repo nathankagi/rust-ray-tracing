@@ -1,6 +1,6 @@
 use std::ops;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Vec3 {
     pub x: f64,
     pub y: f64,
@@ -12,15 +12,15 @@ impl Vec3 {
         Vec3 { x, y, z }
     }
 
-    pub fn x(self) -> f64 {
+    pub fn x(&self) -> f64 {
         self.x
     }
 
-    pub fn y(self) -> f64 {
+    pub fn y(&self) -> f64 {
         self.y
     }
 
-    pub fn z(self) -> f64 {
+    pub fn z(&self) -> f64 {
         self.z
     }
 
@@ -40,7 +40,7 @@ impl Vec3 {
         self / self.length()
     }
 
-    pub fn length(self) -> f64 {
+    pub fn length(&self) -> f64 {
         self.length_squared().sqrt()
     }
 
@@ -115,7 +115,6 @@ impl ops::Div<f64> for Vec3 {
 
 #[cfg(test)]
 mod tests {
-    // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
 
     #[test]
