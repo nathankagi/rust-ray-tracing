@@ -14,9 +14,9 @@ fn hit_sphere(centre: &Vec3, radius: f64, r: &Ray) -> f64 {
     let discriminant = half_b * half_b - a * c;
 
     if discriminant < 0.0 {
-        return -1.0;
+        -1.0
     } else {
-        return (-half_b - discriminant.sqrt()) / a;
+        (-half_b - discriminant.sqrt()) / a
     }
 }
 
@@ -29,7 +29,7 @@ fn ray_colour(r: &Ray) -> Vec3 {
     let unit_direction: Vec3 = r.direction().unit_vector();
     let t: f64 = 0.5 * (unit_direction.y() + 1.0);
 
-    return Vec3::new(1.0, 1.0, 1.0) * (1.0 - t) + Vec3::new(0.5, 0.7, 1.0) * t;
+    Vec3::new(1.0, 1.0, 1.0) * (1.0 - t) + Vec3::new(0.5, 0.7, 1.0) * t
 }
 
 fn main() -> io::Result<()> {

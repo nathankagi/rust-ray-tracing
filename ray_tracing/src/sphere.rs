@@ -40,7 +40,8 @@ impl Hittable for Sphere {
 
         rec.t = root;
         rec.p = r.at(rec.t);
-        rec.normal = (rec.p - centre) / radius;
+        let outward_normal = Vec3::new(rec.p - centre) / radius;
+        rec.set_face_normal(r, outward_normal);
         return true;
     }
 }
