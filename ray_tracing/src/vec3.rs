@@ -1,6 +1,6 @@
 use std::ops;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Vec3 {
     pub x: f64,
     pub y: f64,
@@ -120,36 +120,24 @@ mod tests {
     #[test]
     fn test_create_vec3() {
         let v = Vec3::new(1.0, 2.0, 3.0);
-        assert_eq!(v.x(), 1.0);
-        assert_eq!(v.y(), 2.0);
-        assert_eq!(v.z(), 3.0);
+        assert_eq!(v, Vec3::new(1.0, 2.0, 3.0));
     }
 
     #[test]
     fn test_vec3_operators() {
         let v = Vec3::new(1.0, 2.0, 3.0) + Vec3::new(2.0, 2.0, 2.0);
-        assert_eq!(v.x(), 3.0);
-        assert_eq!(v.y(), 4.0);
-        assert_eq!(v.z(), 5.0);
+        assert_eq!(v, Vec3::new(3.0, 4.0, 5.0));
 
         let v = Vec3::new(1.0, 2.0, 3.0) - Vec3::new(2.0, 2.0, 2.0);
-        assert_eq!(v.x(), -1.0);
-        assert_eq!(v.y(), 0.0);
-        assert_eq!(v.z(), 1.0);
+        assert_eq!(v, Vec3::new(-1.0, 0.0, 1.0));
 
         let v = Vec3::new(1.0, 2.0, 3.0) * Vec3::new(2.0, 2.0, 2.0);
-        assert_eq!(v.x(), 2.0);
-        assert_eq!(v.y(), 4.0);
-        assert_eq!(v.z(), 6.0);
+        assert_eq!(v, Vec3::new(2.0, 4.0, 6.0));
 
         let v = Vec3::new(1.0, 2.0, 3.0) / Vec3::new(2.0, 2.0, 2.0);
-        assert_eq!(v.x(), 0.5);
-        assert_eq!(v.y(), 1.0);
-        assert_eq!(v.z(), 1.5);
+        assert_eq!(v, Vec3::new(0.5, 1.0, 1.5));
 
         let v = Vec3::new(2.0, 3.0, 6.0) / 4.0;
-        assert_eq!(v.x(), 0.5);
-        assert_eq!(v.y(), 3.0 / 4.0);
-        assert_eq!(v.z(), 6.0 / 4.0);
+        assert_eq!(v, Vec3::new(0.5, 3.0 / 4.0, 6.0 / 4.0));
     }
 }

@@ -2,6 +2,7 @@ use crate::hittable;
 use crate::ray::Ray;
 use crate::vec3::Vec3;
 
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Sphere {
     centre: Vec3,
     radius: f64,
@@ -50,5 +51,16 @@ impl hittable::Hittable for Sphere {
         rec.set_face_normal(r, &outward_normal);
 
         true
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sphere_struct() {
+        let sphere = Sphere::new(Vec3::new(0.1, 0.5, 0.2), 5.4);
+        assert_eq!(sphere.centre, Vec3::new(0.1, 0.5, 0.2))
     }
 }
