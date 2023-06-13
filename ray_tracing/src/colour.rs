@@ -1,10 +1,8 @@
 use crate::vec3::Vec3;
+use std::io::{self, Write};
 
-pub fn write_colour(pixel: Vec3) {
-    println!(
-        "{} {} {}",
-        (255.999 * pixel.x()) as i32,
-        (255.999 * pixel.y()) as i32,
-        (255.999 * pixel.z()) as i32
-    );
+pub fn write_colour(colour: &Vec3) -> io::Result<()> {
+    let c = *colour * 255.999;
+    io::stdout().write_all(format!("{} {} {}\n", c.x(), c.y(), c.z()).as_bytes())?;
+    Ok(())
 }

@@ -6,33 +6,18 @@ mod vec3;
 
 use std::io::{self, Write};
 
+use crate::colour::write_colour;
 use crate::ray::Ray;
 use crate::vec3::Vec3;
 
-fn hit_sphere(centre: &Vec3, radius: f64, r: &Ray) -> f64 {
-    let oc: Vec3 = r.origin() - *centre;
-    let a = r.direction().length_squared();
-    let half_b = Vec3::dot(oc, r.direction());
-    let c = oc.length_squared() - radius * radius;
-    let discriminant = half_b * half_b - a * c;
-
-    if discriminant < 0.0 {
-        -1.0
-    } else {
-        (-half_b - discriminant.sqrt()) / a
+fn ray_colour(r: &Ray, world: &dyn hittable::Hittable) -> Vec3 {
+    let mut rec = hittable::HitRecord::new();
+    if world.hit(r, 0.0, f64::INFINITY, &mut rec) {
+        return (rec.normal + Vec3::new(1.0, 1.0, 1.0)) * 0.5;
     }
-}
-
-fn ray_colour(r: &Ray) -> Vec3 {
-    let t = hit_sphere(&Vec3::new(0.0, 0.0, -1.0), 0.5, r);
-    if t > 0.0 {
-        let n = Vec3::unit_vector(r.at(t) - Vec3::new(0.0, 0.0, -1.0));
-        return Vec3::new(n.x() + 1.0, n.y() + 1.0, n.z() + 1.0) * 0.5;
-    }
-    let unit_direction: Vec3 = r.direction().unit_vector();
-    let t: f64 = 0.5 * (unit_direction.y() + 1.0);
-
-    Vec3::new(1.0, 1.0, 1.0) * (1.0 - t) + Vec3::new(0.5, 0.7, 1.0) * t
+    let unit_direction = Vec3::unit_vector(r.direction());
+    let t = (unit_direction.y() + 1.0) * 0.5;
+    (Vec3::new(1.0, 1.0, 1.0) * (1.0 - t)) + (Vec3::new(0.5, 0.7, 1.0) * t)
 }
 
 fn main() -> io::Result<()> {
@@ -40,6 +25,11 @@ fn main() -> io::Result<()> {
     let aspect_ratio = 16.0 / 9.0;
     let image_width: i32 = 400;
     let image_height: i32 = (image_width as f64 / aspect_ratio) as i32;
+
+    // World
+    let mut world: hittable::HittableList = hittable::HittableList::new();
+    world.push(sphere::Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5));
+    world.push(sphere::Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0));
 
     // Camera
     let viewport_height: f64 = 2.0;
@@ -64,10 +54,7 @@ fn main() -> io::Result<()> {
                 origin,
                 lower_left_corner + horizontal * u + vertical * v - origin,
             );
-            let colour: Vec3 = ray_colour(&ray) * 255.999;
-
-            io::stdout()
-                .write_all(format!("{} {} {}\n", colour.x(), colour.y(), colour.z()).as_bytes())?;
+            write_colour(&ray_colour(&ray, &world))?;
         }
     }
     io::stderr().write_all(b"Done\n")?;

@@ -27,7 +27,7 @@ impl hittable::Hittable for Sphere {
         let oc: Vec3 = r.origin() - self.centre();
         let a = r.direction().length_squared();
         let half_b = Vec3::dot(oc, r.direction());
-        let c = oc.length_squared() - self.radius() * self.radius();
+        let c = oc.length_squared() - (self.radius() * self.radius());
 
         let discriminant = half_b * half_b - a * c;
         if discriminant < 0.0 {
@@ -37,7 +37,7 @@ impl hittable::Hittable for Sphere {
         let sqrtd = discriminant.sqrt();
 
         // Nearest root
-        let mut root = -(half_b - sqrtd) / a;
+        let mut root = (-half_b - sqrtd) / a;
         if root < t_min || t_max < root {
             root = (-half_b + sqrtd) / a;
             if root < t_min || t_max < root {
