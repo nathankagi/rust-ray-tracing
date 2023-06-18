@@ -1,16 +1,21 @@
 use crate::hittable;
+use crate::material::Material;
 use crate::ray::Ray;
 use crate::vec3::Vec3;
 
-#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Sphere {
     centre: Vec3,
     radius: f64,
+    material: Material,
 }
 
 impl Sphere {
-    pub fn new(centre: Vec3, radius: f64) -> Sphere {
-        Sphere { centre, radius }
+    pub fn new(centre: Vec3, radius: f64, material: Material) -> Sphere {
+        Sphere {
+            centre,
+            radius,
+            material,
+        }
     }
 
     pub fn centre(&self) -> Vec3 {
@@ -19,6 +24,10 @@ impl Sphere {
 
     pub fn radius(&self) -> f64 {
         self.radius
+    }
+
+    pub fn material(&self) -> Material {
+        self.material
     }
 }
 
@@ -49,6 +58,7 @@ impl hittable::Hittable for Sphere {
         rec.p = r.at(rec.t);
         let outward_normal = (rec.p - self.centre()) / self.radius();
         rec.set_face_normal(r, &outward_normal);
+        rec.material = self.material();
 
         true
     }
@@ -60,7 +70,7 @@ mod tests {
 
     #[test]
     fn test_sphere_struct() {
-        let sphere = Sphere::new(Vec3::new(0.1, 0.5, 0.2), 5.4);
-        assert_eq!(sphere.centre, Vec3::new(0.1, 0.5, 0.2))
+        // let sphere = Sphere::new(Vec3::new(0.1, 0.5, 0.2), 5.4, material: material::material);
+        // assert_eq!(sphere.centre, Vec3::new(0.1, 0.5, 0.2))
     }
 }

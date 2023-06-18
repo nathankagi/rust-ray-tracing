@@ -1,16 +1,20 @@
 mod camera;
 mod colour;
 mod hittable;
+mod material;
 mod ray;
 mod sphere;
 mod vec3;
 
+use material::{Lambertian, Material, Metal, Scatterable};
 use rand::Rng;
 use std::io::{self, Write};
+use std::thread::sleep;
 
 use crate::camera::Camera;
 use crate::colour::write_colour;
 use crate::ray::Ray;
+use crate::sphere::Sphere;
 use crate::vec3::Vec3;
 
 fn ray_colour(r: &Ray, world: &dyn hittable::Hittable, depth: i32) -> Vec3 {
@@ -21,10 +25,20 @@ fn ray_colour(r: &Ray, world: &dyn hittable::Hittable, depth: i32) -> Vec3 {
         return Vec3::zero();
     }
 
-    if world.hit(r, 0.0001, f64::INFINITY, &mut rec) {
-        let target = rec.p + rec.normal + Vec3::random_in_unit_sphere();
-        return (ray_colour(&Ray::new(rec.p, target - rec.p), world, depth - 1)) * 0.5;
+    if world.hit(r, 0.001, f64::INFINITY, &mut rec) {
+        let mut scattered = Ray::new(Vec3::zero(), Vec3::zero());
+        let mut attenuation = Vec3::zero();
+
+        if rec
+            .material
+            .scatter(r, &rec, &mut attenuation, &mut scattered)
+        {
+            return attenuation * ray_colour(&scattered, world, depth - 1);
+        }
+
+        return Vec3::zero();
     }
+
     let unit_direction = Vec3::unit_vector(r.direction());
     let t = (unit_direction.y() + 1.0) * 0.5;
     (Vec3::new(1.0, 1.0, 1.0) * (1.0 - t)) + (Vec3::new(0.5, 0.7, 1.0) * t)
@@ -35,13 +49,39 @@ fn main() -> io::Result<()> {
     let aspect_ratio = 16.0 / 9.0;
     let image_width: i32 = 400;
     let image_height: i32 = (image_width as f64 / aspect_ratio) as i32;
-    let samples_per_pixel = 100;
-    let max_depth = 50;
+    let samples_per_pixel = 20;
+    let max_depth = 10;
 
     // World
     let mut world: hittable::HittableList = hittable::HittableList::new();
-    world.push(sphere::Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5));
-    world.push(sphere::Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0));
+
+    // material
+    let material_ground = Material::Lambertian(Lambertian::new(Vec3::new(0.8, 0.8, 0.0)));
+    let material_centre = Material::Lambertian(Lambertian::new(Vec3::new(0.7, 0.3, 0.3)));
+    let material_left = Material::Metal(Metal::new(Vec3::new(0.8, 0.8, 0.8)));
+    let material_right = Material::Metal(Metal::new(Vec3::new(0.8, 0.6, 0.2)));
+
+    // objects
+    world.push(Sphere::new(
+        Vec3::new(0.0, -100.5, -1.0),
+        100.0,
+        material_ground,
+    ));
+    world.push(Sphere::new(
+        Vec3::new(0.0, 0.0, -1.0),
+        100.0,
+        material_centre,
+    ));
+    world.push(Sphere::new(
+        Vec3::new(-1.0, 0.0, -1.0),
+        100.0,
+        material_left,
+    ));
+    world.push(Sphere::new(
+        Vec3::new(1.0, 0.0, -1.0),
+        100.0,
+        material_right,
+    ));
 
     // Camera
     let cam = Camera::new();

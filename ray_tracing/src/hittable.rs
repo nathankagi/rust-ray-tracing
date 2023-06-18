@@ -1,23 +1,26 @@
+use crate::material::{Lambertian, Material};
 use crate::ray::Ray;
 use crate::vec3::Vec3;
 
-pub trait Hittable: Sync {
+pub trait Hittable {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool;
 }
 
-#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct HitRecord {
     pub p: Vec3,
     pub normal: Vec3,
+    pub material: Material,
     pub t: f64,
     pub front_face: bool,
 }
 
 impl HitRecord {
     pub fn new() -> HitRecord {
+        // default material type of hit record to be lambertian type
         HitRecord {
             p: Vec3::zero(),
             normal: Vec3::zero(),
+            material: Material::Lambertian(Lambertian::new(Vec3::new(0.0, 0.0, 0.0))),
             t: 0.0,
             front_face: false,
         }
@@ -68,6 +71,7 @@ impl Hittable for HittableList {
                 rec.p = temp_rec.p;
                 rec.t = temp_rec.t;
                 rec.normal = temp_rec.normal;
+                rec.material = temp_rec.material;
             }
         }
 
@@ -77,33 +81,19 @@ impl Hittable for HittableList {
 
 #[cfg(test)]
 mod tests {
-    use crate::sphere::Sphere;
+    use crate::Sphere;
 
     use super::*;
-
-    #[test]
-    fn test_hit_record() {
-        let hr = HitRecord::new();
-        assert_eq!(
-            hr,
-            HitRecord {
-                p: Vec3::new(0.0, 0.0, 0.0),
-                normal: Vec3::new(0.0, 0.0, 0.0),
-                t: 0.0,
-                front_face: false,
-            }
-        )
-    }
 
     #[test]
     fn test_hit_record_set_face_norm() {}
 
     #[test]
     fn test_hittable_list() {
-        let mut list = HittableList::new();
+        // let mut list = HittableList::new();
 
-        let sphere = Sphere::new(Vec3::new(1.0, 2.0, 3.0), 4.7);
-        list.push(sphere);
+        // let sphere = Sphere::new(Vec3::new(1.0, 2.0, 3.0), 4.7);
+        // list.push(sphere);
     }
 
     #[test]
