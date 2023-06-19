@@ -1,3 +1,4 @@
+use crate::hittable;
 use crate::material::{Lambertian, Material};
 use crate::ray::Ray;
 use crate::vec3::Vec3;
@@ -28,10 +29,10 @@ impl HitRecord {
 
     pub fn set_face_normal(&mut self, r: &Ray, outward_normal: &Vec3) {
         self.front_face = Vec3::dot(r.direction(), *outward_normal) < 0.0;
-        if self.front_face {
-            self.normal = *outward_normal;
+        self.normal = if self.front_face {
+            *outward_normal
         } else {
-            self.normal = *outward_normal * -1.0;
+            -*outward_normal
         };
     }
 }
@@ -90,10 +91,9 @@ mod tests {
 
     #[test]
     fn test_hittable_list() {
-        // let mut list = HittableList::new();
-
-        // let sphere = Sphere::new(Vec3::new(1.0, 2.0, 3.0), 4.7);
-        // list.push(sphere);
+        let mut list = hittable::HittableList::new();
+        let material = Material::Lambertian(Lambertian::new(Vec3::new(0.8, 0.6, 0.2)));
+        list.push(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0, material));
     }
 
     #[test]

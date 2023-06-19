@@ -6,10 +6,9 @@ mod ray;
 mod sphere;
 mod vec3;
 
-use material::{Lambertian, Material, Metal, Scatterable};
+use material::{Dielectric, Lambertian, Material, Metal, Scatterable};
 use rand::Rng;
 use std::io::{self, Write};
-use std::thread::sleep;
 
 use crate::camera::Camera;
 use crate::colour::write_colour;
@@ -57,9 +56,9 @@ fn main() -> io::Result<()> {
 
     // material
     let material_ground = Material::Lambertian(Lambertian::new(Vec3::new(0.8, 0.8, 0.0)));
-    let material_centre = Material::Lambertian(Lambertian::new(Vec3::new(0.7, 0.3, 0.3)));
-    let material_left = Material::Metal(Metal::new(Vec3::new(0.8, 0.8, 0.8)));
-    let material_right = Material::Metal(Metal::new(Vec3::new(0.8, 0.6, 0.2)));
+    let material_centre = Material::Lambertian(Lambertian::new(Vec3::new(0.1, 0.2, 0.5)));
+    let material_left = Material::Dielectric(Dielectric::new(2.0));
+    let material_right = Material::Metal(Metal::new(Vec3::new(0.8, 0.6, 0.2), 0.0));
 
     // objects
     world.push(Sphere::new(
@@ -67,21 +66,9 @@ fn main() -> io::Result<()> {
         100.0,
         material_ground,
     ));
-    world.push(Sphere::new(
-        Vec3::new(0.0, 0.0, -1.0),
-        100.0,
-        material_centre,
-    ));
-    world.push(Sphere::new(
-        Vec3::new(-1.0, 0.0, -1.0),
-        100.0,
-        material_left,
-    ));
-    world.push(Sphere::new(
-        Vec3::new(1.0, 0.0, -1.0),
-        100.0,
-        material_right,
-    ));
+    world.push(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5, material_centre));
+    world.push(Sphere::new(Vec3::new(-1.0, 0.0, -1.0), 0.5, material_left));
+    world.push(Sphere::new(Vec3::new(1.0, 0.0, -1.0), 0.5, material_right));
 
     // Camera
     let cam = Camera::new();

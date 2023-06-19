@@ -41,8 +41,15 @@ impl Vec3 {
         )
     }
 
-    pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
-        *v - (*n * Vec3::dot(*v, *n) * 2.0)
+    pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {
+        v - (n * 2.0 * Vec3::dot(v, n))
+    }
+
+    pub fn refract(uv: Vec3, n: Vec3, etai_over_etat: f64) -> Vec3 {
+        let cos_theta = Vec3::dot(-uv, n);
+        let r_out_perp = (uv + n * cos_theta) * etai_over_etat;
+        let r_out_parallel = n * -((1.0 - r_out_perp.length_squared()) as f64).abs().sqrt();
+        r_out_perp + r_out_parallel
     }
 
     pub fn unit_vector(self) -> Vec3 {
@@ -81,6 +88,14 @@ impl Vec3 {
     pub fn near_zero(&self) -> bool {
         let s = 1.0e-8;
         return self.x().abs() < s && self.y().abs() < s && self.z().abs() < s;
+    }
+}
+
+impl ops::Neg for Vec3 {
+    type Output = Vec3;
+
+    fn neg(self) -> Vec3 {
+        Vec3::new(-self.x(), -self.y(), -self.z())
     }
 }
 
