@@ -1,4 +1,4 @@
-use crate::hittable;
+use crate::hittable::{self, HitRecord};
 use crate::material::Material;
 use crate::ray::Ray;
 use crate::vec3::Vec3;
@@ -32,13 +32,13 @@ impl Sphere {
 }
 
 impl hittable::Hittable for Sphere {
-    fn hit(&self, r: &Ray, t_min: f64, t_max: f64, rec: &mut hittable::HitRecord) -> bool {
+    fn hit(&self, r: Ray, t_min: f64, t_max: f64, rec: &mut hittable::HitRecord) -> bool {
         let oc: Vec3 = r.origin() - self.centre();
         let a = r.direction().length_squared();
         let half_b = Vec3::dot(oc, r.direction());
-        let c = oc.length_squared() - (self.radius() * self.radius());
+        let c = oc.length_squared() - self.radius().powi(2);
 
-        let discriminant = half_b * half_b - a * c;
+        let discriminant = half_b.powi(2) - a * c;
         if discriminant < 0.0 {
             return false;
         }
@@ -57,7 +57,7 @@ impl hittable::Hittable for Sphere {
         rec.t = root;
         rec.p = r.at(rec.t);
         let outward_normal = (rec.p - self.centre()) / self.radius();
-        rec.set_face_normal(r, &outward_normal);
+        rec.set_face_normal(r, outward_normal);
         rec.material = self.material();
 
         true

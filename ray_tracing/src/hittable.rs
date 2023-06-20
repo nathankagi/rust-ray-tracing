@@ -4,7 +4,7 @@ use crate::ray::Ray;
 use crate::vec3::Vec3;
 
 pub trait Hittable {
-    fn hit(&self, r: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool;
+    fn hit(&self, r: Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool;
 }
 
 pub struct HitRecord {
@@ -27,12 +27,12 @@ impl HitRecord {
         }
     }
 
-    pub fn set_face_normal(&mut self, r: &Ray, outward_normal: &Vec3) {
-        self.front_face = Vec3::dot(r.direction(), *outward_normal) < 0.0;
+    pub fn set_face_normal(&mut self, r: Ray, outward_normal: Vec3) {
+        self.front_face = Vec3::dot(r.direction(), outward_normal) < 0.0;
         self.normal = if self.front_face {
-            *outward_normal
+            outward_normal
         } else {
-            -*outward_normal
+            -outward_normal
         };
     }
 }
@@ -60,7 +60,7 @@ impl HittableList {
 }
 
 impl Hittable for HittableList {
-    fn hit(&self, r: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
+    fn hit(&self, r: Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
         let mut temp_rec: HitRecord = HitRecord::new();
         let mut hit_anything = false;
         let mut closest_so_far = t_max;
@@ -69,10 +69,14 @@ impl Hittable for HittableList {
             if each.hit(r, t_min, closest_so_far, &mut temp_rec) {
                 hit_anything = true;
                 closest_so_far = temp_rec.t;
-                rec.p = temp_rec.p;
-                rec.t = temp_rec.t;
-                rec.normal = temp_rec.normal;
-                rec.material = temp_rec.material;
+
+                *rec = HitRecord {
+                    p: temp_rec.p,
+                    normal: temp_rec.normal,
+                    material: temp_rec.material,
+                    t: temp_rec.t,
+                    front_face: temp_rec.front_face,
+                };
             }
         }
 

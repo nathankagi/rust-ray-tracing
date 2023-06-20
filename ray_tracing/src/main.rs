@@ -16,7 +16,7 @@ use crate::ray::Ray;
 use crate::sphere::Sphere;
 use crate::vec3::Vec3;
 
-fn ray_colour(r: &Ray, world: &dyn hittable::Hittable, depth: i32) -> Vec3 {
+fn ray_colour(r: Ray, world: &dyn hittable::Hittable, depth: i32) -> Vec3 {
     let mut rec = hittable::HitRecord::new();
 
     // set limit on number of bounces to limit recursion
@@ -30,9 +30,9 @@ fn ray_colour(r: &Ray, world: &dyn hittable::Hittable, depth: i32) -> Vec3 {
 
         if rec
             .material
-            .scatter(r, &rec, &mut attenuation, &mut scattered)
+            .scatter(&r, &rec, &mut attenuation, &mut scattered)
         {
-            return attenuation * ray_colour(&scattered, world, depth - 1);
+            return attenuation * ray_colour(scattered, world, depth - 1);
         }
 
         return Vec3::zero();
@@ -57,7 +57,7 @@ fn main() -> io::Result<()> {
     // material
     let material_ground = Material::Lambertian(Lambertian::new(Vec3::new(0.8, 0.8, 0.0)));
     let material_centre = Material::Lambertian(Lambertian::new(Vec3::new(0.1, 0.2, 0.5)));
-    let material_left = Material::Dielectric(Dielectric::new(2.0));
+    let material_left = Material::Dielectric(Dielectric::new(1.5));
     let material_right = Material::Metal(Metal::new(Vec3::new(0.8, 0.6, 0.2), 0.0));
 
     // objects
@@ -68,6 +68,7 @@ fn main() -> io::Result<()> {
     ));
     world.push(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5, material_centre));
     world.push(Sphere::new(Vec3::new(-1.0, 0.0, -1.0), 0.5, material_left));
+    world.push(Sphere::new(Vec3::new(-1.0, 0.0, -1.0), -0.4, material_left));
     world.push(Sphere::new(Vec3::new(1.0, 0.0, -1.0), 0.5, material_right));
 
     // Camera
@@ -87,7 +88,7 @@ fn main() -> io::Result<()> {
                 let v = (j as f64 + rng.gen::<f64>()) / ((image_height - 1) as f64);
 
                 let r = cam.get_ray(u, v);
-                pixel_colour = ray_colour(&r, &world, max_depth) + pixel_colour;
+                pixel_colour = ray_colour(r, &world, max_depth) + pixel_colour;
             }
             write_colour(&pixel_colour, samples_per_pixel)?;
         }

@@ -1,7 +1,7 @@
-use crate::camera;
 use crate::hittable::HitRecord;
 use crate::ray::Ray;
 use crate::vec3::Vec3;
+use rand::{self, Rng};
 
 pub trait Scatterable {
     fn scatter(
@@ -68,6 +68,12 @@ impl Dielectric {
     pub fn new(refraction_index: f64) -> Dielectric {
         Dielectric { refraction_index }
     }
+
+    pub fn reflectance(&self, cosine: f64, refraction_ratio: f64) -> f64 {
+        let r0 = ((1.0 - refraction_ratio) / (1.0 + refraction_ratio)).powi(2);
+
+        r0 + (1.0 - r0) * (1.0 - cosine).powi(5)
+    }
 }
 
 impl Scatterable for Lambertian {
@@ -126,9 +132,12 @@ impl Scatterable for Dielectric {
         let unit_direction = r_in.direction().unit_vector();
 
         let cos_theta = Vec3::dot(-unit_direction, rec.normal).min(1.0);
-        let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
+        let sin_theta = (1.0 - cos_theta.powi(2)).sqrt();
 
-        let direction = if refraction_ratio * sin_theta > 1.0 {
+        let cannot_refract = refraction_ratio * sin_theta > 1.0;
+        let direction = if cannot_refract
+            || self.reflectance(cos_theta, refraction_ratio) > rand::thread_rng().gen::<f64>()
+        {
             Vec3::reflect(unit_direction, rec.normal)
         } else {
             Vec3::refract(unit_direction, rec.normal, refraction_ratio)
