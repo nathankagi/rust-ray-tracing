@@ -1,4 +1,3 @@
-use crate::hittable;
 use crate::material::{Lambertian, Material};
 use crate::ray::Ray;
 use crate::vec3::Vec3;
@@ -95,7 +94,7 @@ mod tests {
 
     #[test]
     fn test_hittable_list() {
-        let mut list = hittable::HittableList::new();
+        let mut list = HittableList::new();
         let material = Material::Lambertian(Lambertian::new(Vec3::new(0.8, 0.6, 0.2)));
         list.push(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0, material));
     }
