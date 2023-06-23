@@ -6,10 +6,8 @@ mod ray;
 mod sphere;
 mod vec3;
 
-use hittable::HittableList;
 use material::{Dielectric, Lambertian, Material, Metal, Scatterable};
 use rand::Rng;
-use std::f32::consts::PI;
 use std::io::{self, Write};
 
 use crate::camera::Camera;
