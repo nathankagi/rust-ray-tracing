@@ -1,5 +1,6 @@
-use crate::vec3::Vec3;
 use std::io::{self, Write};
+
+use crate::structures::vec3::Vec3;
 
 pub fn write_colour(pixel_colour: &Vec3, samples_per_pixel: i32) -> io::Result<()> {
     let mut r = pixel_colour.x();

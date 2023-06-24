@@ -1,8 +1,16 @@
-use crate::hittable;
+use rand::Rng;
 
-fn create_random_scene() -> hittable::HittableList {
+use crate::materials::dielectric::Dielectric;
+use crate::materials::lambertian::Lambertian;
+use crate::materials::metal::Metal;
+use crate::materials::Material;
+use crate::objects::sphere::Sphere;
+use crate::structures::hittable::HittableList;
+use crate::structures::vec3::Vec3;
+
+pub fn create_random_scene() -> HittableList {
     let mut rng = rand::thread_rng();
-    let mut world = hittable::HittableList::new();
+    let mut world = HittableList::new();
 
     let ground_material = Material::Lambertian(Lambertian::new(Vec3::new(0.5, 0.5, 0.5)));
     world.push(Sphere::new(

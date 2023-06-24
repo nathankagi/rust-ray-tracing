@@ -1,5 +1,5 @@
-use crate::Ray;
-use crate::Vec3;
+use crate::structures::ray::Ray;
+use crate::structures::vec3::Vec3;
 
 pub struct Camera {
     origin: Vec3,

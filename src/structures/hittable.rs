@@ -1,6 +1,8 @@
-use crate::material::{Lambertian, Material};
-use crate::ray::Ray;
-use crate::vec3::Vec3;
+use crate::materials::lambertian::Lambertian;
+use crate::materials::Material;
+
+use crate::structures::ray::Ray;
+use crate::structures::vec3::Vec3;
 
 pub trait Hittable {
     fn hit(&self, r: Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool;
@@ -85,7 +87,7 @@ impl Hittable for HittableList {
 
 #[cfg(test)]
 mod tests {
-    use crate::Sphere;
+    use crate::objects::sphere::Sphere;
 
     use super::*;
 

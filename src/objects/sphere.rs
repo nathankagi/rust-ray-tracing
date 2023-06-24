@@ -1,7 +1,7 @@
-use crate::hittable::{self, HitRecord};
-use crate::material::Material;
-use crate::ray::Ray;
-use crate::vec3::Vec3;
+use crate::materials::Material;
+use crate::structures::hittable::{HitRecord, Hittable};
+use crate::structures::ray::Ray;
+use crate::structures::vec3::Vec3;
 
 pub struct Sphere {
     centre: Vec3,
@@ -31,8 +31,8 @@ impl Sphere {
     }
 }
 
-impl hittable::Hittable for Sphere {
-    fn hit(&self, r: Ray, t_min: f64, t_max: f64, rec: &mut hittable::HitRecord) -> bool {
+impl Hittable for Sphere {
+    fn hit(&self, r: Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
         let oc: Vec3 = r.origin() - self.centre();
         let a = r.direction().length_squared();
         let half_b = Vec3::dot(oc, r.direction());
