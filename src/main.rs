@@ -1,19 +1,17 @@
 mod colour;
+mod image;
 mod materials;
 mod objects;
 mod raytracer;
 mod scene;
 mod structures;
 
-use rand::Rng;
-use std::io::{self, Write};
+use std::io;
 
 use crate::objects::camera::Camera;
+use crate::scene::create_random_scene;
 use crate::structures::hittable::HittableList;
 use crate::structures::vec3::Vec3;
-
-use crate::colour::write_colour;
-use crate::scene::create_random_scene;
 
 fn main() -> io::Result<()> {
     // Image
@@ -28,7 +26,7 @@ fn main() -> io::Result<()> {
 
     // Camera
     let lookfrom = Vec3::new(13.0, 2.0, 3.0);
-    let lookat = Vec3::new(0.0, 0.0, 0.0);
+    let lookat = Vec3::zero();
     let vup = Vec3::new(0.0, 1.0, 0.0);
     let dist_to_focus = 10.0;
     let aperture = 0.1;
@@ -44,24 +42,16 @@ fn main() -> io::Result<()> {
     );
 
     //Render
-    io::stdout().write_all(format!("P3\n{image_width} {image_height}\n255\n").as_bytes())?;
+    let colour_matrix = raytracer::render(
+        image_height,
+        image_width,
+        samples_per_pixel,
+        max_depth,
+        world,
+        cam,
+    );
 
-    let mut rng = rand::thread_rng();
+    image::save_ppm(colour_matrix);
 
-    for j in (0i32..image_height).rev() {
-        io::stderr().write_all(format!("Scanlines remaining: {j}\n").as_bytes())?;
-        for i in 0i32..image_width {
-            let mut pixel_colour = Vec3::zero();
-            for s in 0i32..samples_per_pixel {
-                let u = (i as f64 + rng.gen::<f64>()) / ((image_width - 1) as f64);
-                let v = (j as f64 + rng.gen::<f64>()) / ((image_height - 1) as f64);
-
-                let r = cam.get_ray(u, v);
-                pixel_colour = raytracer::ray_colour(r, &world, max_depth) + pixel_colour;
-            }
-            write_colour(&pixel_colour, samples_per_pixel)?;
-        }
-    }
-    io::stderr().write_all(b"Done\n")?;
     Ok(())
 }

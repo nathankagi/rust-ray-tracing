@@ -33,7 +33,7 @@ impl Scatterable for Dielectric {
         attenuation: &mut Vec3,
         scattered: &mut Ray,
     ) -> bool {
-        *attenuation = Vec3::new(1.0, 1.0, 1.0);
+        *attenuation = Vec3::one();
         let refraction_ratio = if rec.front_face {
             1.0 / self.refraction_index
         } else {

@@ -22,7 +22,7 @@ impl HitRecord {
         HitRecord {
             p: Vec3::zero(),
             normal: Vec3::zero(),
-            material: Material::Lambertian(Lambertian::new(Vec3::new(0.0, 0.0, 0.0))),
+            material: Material::Lambertian(Lambertian::new(Vec3::one())),
             t: 0.0,
             front_face: false,
         }
@@ -59,6 +59,9 @@ impl HittableList {
         self.items.clear();
     }
 }
+
+unsafe impl Send for HittableList {}
+unsafe impl Sync for HittableList {}
 
 impl Hittable for HittableList {
     fn hit(&self, r: Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {

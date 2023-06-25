@@ -1,4 +1,4 @@
-use rand::Rng;
+use rand;
 
 use crate::materials::dielectric::Dielectric;
 use crate::materials::lambertian::Lambertian;
@@ -9,7 +9,6 @@ use crate::structures::hittable::HittableList;
 use crate::structures::vec3::Vec3;
 
 pub fn create_random_scene() -> HittableList {
-    let mut rng = rand::thread_rng();
     let mut world = HittableList::new();
 
     let ground_material = Material::Lambertian(Lambertian::new(Vec3::new(0.5, 0.5, 0.5)));
@@ -21,11 +20,11 @@ pub fn create_random_scene() -> HittableList {
 
     for a in -11..12 {
         for b in -11..12 {
-            let choose_mat = rng.gen::<f64>();
+            let choose_mat = rand::random::<f64>();
             let center = Vec3::new(
-                a as f64 + 0.9 * rng.gen::<f64>(),
+                a as f64 + 0.9 * rand::random::<f64>(),
                 0.2,
-                b as f64 + rng.gen::<f64>(),
+                b as f64 + rand::random::<f64>(),
             );
 
             if (center - Vec3::new(4.0, 0.2, 0.0)).length() > 0.9 {
@@ -35,7 +34,7 @@ pub fn create_random_scene() -> HittableList {
                     world.push(Sphere::new(center, 0.2, material));
                 } else if choose_mat < 0.95 {
                     let albedo = Vec3::random(0.5, 1.0);
-                    let fuzz = rng.gen::<f64>();
+                    let fuzz = rand::random::<f64>();
                     let material = Material::Metal(Metal::new(albedo, fuzz));
                     world.push(Sphere::new(center, 0.2, material));
                 } else {

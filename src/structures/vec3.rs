@@ -17,6 +17,10 @@ impl Vec3 {
         Vec3::new(0.0, 0.0, 0.0)
     }
 
+    pub fn one() -> Vec3 {
+        Vec3::new(1.0, 1.0, 1.0)
+    }
+
     pub fn x(&self) -> f64 {
         self.x
     }
@@ -98,6 +102,16 @@ impl Vec3 {
     pub fn near_zero(&self) -> bool {
         let s = 1.0e-8;
         return self.x().abs() < s && self.y().abs() < s && self.z().abs() < s;
+    }
+
+    pub fn to_colour(&self, samples_per_pixel: i32) -> Vec3 {
+        let scale = 1.0 / (samples_per_pixel as f64);
+
+        Vec3::new(
+            256.0 * (self.x() * scale).sqrt().clamp(0.0, 0.999),
+            256.0 * (self.y() * scale).sqrt().clamp(0.0, 0.999),
+            256.0 * (self.z() * scale).sqrt().clamp(0.0, 0.999),
+        )
     }
 }
 
