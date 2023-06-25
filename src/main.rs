@@ -29,7 +29,7 @@ fn main() -> io::Result<()> {
     let lookat = Vec3::zero();
     let vup = Vec3::new(0.0, 1.0, 0.0);
     let dist_to_focus = 10.0;
-    let aperture = 0.1;
+    let aperture = 0.001;
 
     let cam = Camera::new(
         lookfrom,

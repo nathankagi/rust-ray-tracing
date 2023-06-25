@@ -4,7 +4,7 @@ use crate::structures::hittable::{HitRecord, Hittable};
 use crate::structures::ray::Ray;
 use crate::structures::vec3::Vec3;
 
-use indicatif::ProgressBar;
+use indicatif::{ProgressBar, ProgressStyle};
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 
 pub fn ray_colour(r: Ray, world: &dyn Hittable, depth: i32) -> Vec3 {
@@ -42,8 +42,17 @@ pub fn render(
     world: impl Hittable + std::marker::Sync,
     cam: Camera,
 ) -> Vec<Vec<Vec3>> {
-    eprintln!("Rendering {} pixels", (image_height * image_width));
+    eprintln!("rendering image:");
+    eprintln!(
+        "   --> resolution: {}x{}, samples per pixel: {},  reflections: {}",
+        image_width, image_height, samples_per_pixel, max_depth
+    );
     let bar = ProgressBar::new((image_height * image_width).try_into().unwrap());
+    let style = ProgressStyle::with_template(
+        "{bar:40} {percent}% | eta: {eta} elapsed: {elapsed} {pos:>7}/{len:7}",
+    )
+    .unwrap();
+    bar.set_style(style);
 
     let image: Vec<Vec<Vec3>> = (0i32..image_height)
         .into_par_iter()
